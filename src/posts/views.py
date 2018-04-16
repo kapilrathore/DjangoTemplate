@@ -9,6 +9,7 @@ except:
 #     pass
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -23,10 +24,8 @@ from .forms import PostForm
 from .models import Post
 
 
-
+@login_required
 def post_create(request):
-	if not request.user.is_staff or not request.user.is_superuser:
-		raise Http404
 		
 	form = PostForm(request.POST or None, request.FILES or None)
 	if form.is_valid():

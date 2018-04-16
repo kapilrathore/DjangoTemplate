@@ -24,7 +24,7 @@
 <!-- {% if instance.read_time|time:"i" <= "01" %} < 1 minute {% else %}{{ instance.read_time|time:"i" }} minutes {% endif %} -->
 
 
-<p>Read time: {% if instance.read_time <= 1 %} < 1 Minute {% else %}{{ instance.read_time }} minutes {% endif %}</p>
+<!-- <p>Read time: {% if instance.read_time <= 1 %} < 1 Minute {% else %}{{ instance.read_time }} minutes {% endif %}</p> -->
 {% if instance.user.get_full_name %}
 <p>Author: {{ instance.user.get_full_name }}</p>
 {% endif %}
@@ -75,19 +75,11 @@
         <p>You must login to comment </p>
         {% endif %}
         </div>
-
         </blockquote>
-
         <hr/>
         {% endfor %}
     </div>
-
-
-
-
 </div>
 </div>
 </div>
-
-
 {% endblock content %}
