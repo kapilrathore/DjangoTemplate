@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # local apps
     'comments',
     'posts',
+    'accounts'
 
 ]
 
@@ -142,6 +143,12 @@ STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_cdn")
+
+DETECT_FILE_URL = os.path.join(os.path.dirname(BASE_DIR), "src/faceDet/haarcascade_frontalface_default.xml")
+DATASET_URL = os.path.join(os.path.dirname(BASE_DIR), "src/faceDet/dataSet")
+MODEL_URL = os.path.join(os.path.dirname(BASE_DIR), "src/faceDet/Recognizer")
+
+print(BASE_DIR)
 
 
 

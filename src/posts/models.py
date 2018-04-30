@@ -9,6 +9,10 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+
 from markdown_deux import markdown
 from comments.models import Comment
 
@@ -22,7 +26,6 @@ class PostManager(models.Manager):
     def active(self, *args, **kwargs):
         # Post.objects.all() = super(PostManager, self).all()
         return super(PostManager, self).filter(draft=False).filter(publish__lte=timezone.now())
-
 
 def upload_location(instance, filename):
     user = instance.user
@@ -51,6 +54,7 @@ class Post(models.Model):
     read_time =  models.IntegerField(default=0) # models.TimeField(null=True, blank=True) #assume minutes
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+    processed = models.BooleanField(default=False)
 
     objects = PostManager()
 
@@ -95,8 +99,11 @@ def create_slug(instance, new_slug=None):
     return slug
 
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
+
     if not instance.slug:
         instance.slug = create_slug(instance)
+    
+    instance.draft = not instance.my_photo
 
     if instance.content:
         html_string = instance.get_markdown()

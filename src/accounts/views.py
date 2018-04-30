@@ -3,11 +3,13 @@ from django.contrib.auth import (
     get_user_model,
     login,
     logout,
-
     )
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+
+from accounts.models import Friend
 
 from .forms import UserLoginForm, UserRegisterForm
 
@@ -37,6 +39,10 @@ def register_view(request):
         password = form.cleaned_data.get('password')
         user.set_password(password)
         user.save()
+        
+        friend = Friend.objects.create(current_user=user)
+        friend.save()
+
         new_user = authenticate(username=user.username, password=password)
         login(request, new_user)
         if next:
@@ -52,9 +58,14 @@ def register_view(request):
 @login_required
 def all_users(request):
     title = "All Users"
-    users = User.objects.filter(is_superuser=False)
+    
+    all_users = User.objects.filter(is_superuser=False).exclude(id=request.user.id)
+    friend = Friend.objects.get(current_user=request.user)
+    friends = friend.friends.all()
+
     context = {
-        "users": users,
+        "all_users": all_users,
+        "friends": friends,
         "title": title
     }
     return render(request, "all_users.html", context)
@@ -62,3 +73,12 @@ def all_users(request):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+def change_friends(request, operation, pk):
+    new_friend = User.objects.get(pk=pk)
+    if operation == 'add':
+        Friend.make_friend(request.user, new_friend)
+    elif operation == 'remove':
+        Friend.remove_friend(request.user, new_friend)
+
+    return redirect("/all_users")
